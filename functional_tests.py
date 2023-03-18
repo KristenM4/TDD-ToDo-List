@@ -38,20 +38,25 @@ class NewVisitorTest(unittest.TestCase):
 
         table = self.browser.find_element(By.ID, "id_list_table")
         rows = table.find_elements(By.TAG_NAME, "tr")
-        self.assertTrue(
-            any(row.text == "1: Get car oil changed" for row in rows),
-            "New to-do item did not appear in table"
-        )
+        self.assertIn("1: Get car oil changed", [row.text for row in rows])
 
         # The option to add another item to the to-do list is there
         # User adds "Wash car" as the second item on the list
         #inputbox.send_keys("Wash car")
-        self.fail("Finish the test!")
+        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox.send_keys("Wash car")
+        inputbox.send_keys(Keys.ENTER)
+        time.sleep(1)
 
         # The page is updated and now shows 2 items in the to-do list
+        table = self.browser.find_element(By.ID, "id_list_table")
+        rows = table.find_elements(By.TAG_NAME, "tr")
+        self.assertIn("1: Get car oil changed", [row.text for row in rows])
+        self.assertIn("2: Wash car", [row.text for row in rows])
 
         # The site has a unique URL for this user and contains an explanation
         # to save the URL and revisit it to view the list again
+        self.fail("Finish the test!")
 
         # The user visits the unique URL and sees their list
 
