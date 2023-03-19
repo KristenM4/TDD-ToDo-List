@@ -3,8 +3,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import time
 import unittest
+from django.test import LiveServerTestCase
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -19,7 +20,7 @@ class NewVisitorTest(unittest.TestCase):
     
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Someone heard about our website, a to-do list maker, and wants to check it out
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # They see that to-do lists are mentioned in the page title and header
         self.assertIn("To-Do", self.browser.title)
@@ -61,6 +62,3 @@ class NewVisitorTest(unittest.TestCase):
         # The user visits the unique URL and sees their list
 
         # The user then closes their browser
-
-if __name__ == "__main__":
-    unittest.main()
