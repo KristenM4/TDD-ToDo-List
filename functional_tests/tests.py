@@ -105,4 +105,17 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn("Dice onions", page_text)
 
         # all users have quit the browser
+    
+    def test_layout_and_styling(self):
+        # the first user goes to the home page
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # user notices the input box is centered
+        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        self.assertAlmostEqual(
+            inputbox.location["x"] + inputbox.size["width"] / 2,
+            512,
+            delta=10
+        )
 
