@@ -71,3 +71,44 @@ class NewVisitorTest(LiveServerTestCase):
         # The user visits the unique URL and sees their list
 
         # The user then closes their browser
+    
+    def test_multiple_users_can_start_lists_at_different_urls(self):
+        # The same user wants to create a new to-do list
+        self.browser.get(self.live_server_url)
+        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox.send_keys("Do the dishes")
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table("1: Do the dishes")
+
+        # User sees the new list has a unique URL
+        user_list_url = self.browser.current_url
+        self.assertRegex(user_list_url, "/lists/.+")
+
+        # Another user, user2, visits the site
+        # There is no sign of the first user's list
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+        self.browser.get(self.live_server_url)
+
+        page_text = self.browser.find_element(By.TAG_NAME, "body").text
+        self.assertNotIn("Do the dishes", page_text)
+        self.assertNotIn("Get car oil changed", page_text)
+
+        # user2 starts a new list by entering a new item
+        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        inputbox.send_keys("Dice onions")
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table("1: Dice onions")
+
+        # user2 gets their own unique URL
+        user2_list_url = self.browser.current_url
+        self.assertRegex(user2_list_url, "/lists/.+")
+        self.assertNotEqual(user_list_url, user2_list_url)
+
+        # there is still no trace of the first user's list
+        page_text = self.browser.find_element(By.TAG_NAME, "body").text
+        self.assertNotIn("Do the dishes", page_text)
+        self.assertIn("Dice onions", page_text)
+
+        # all users have quit the browser
+
